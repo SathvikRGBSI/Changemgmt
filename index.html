@@ -1,220 +1,560 @@
-
-
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>DMS | RGBSI</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Change Management Request</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Custom styles for the application */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* Tailwind gray-50 */
+        }
 
-  <link rel="stylesheet" href="/plugins/fontawesome-free/css/all.min.css">
-  <link rel="stylesheet" href="/dist/css/adminlte.min.css">
-  <link rel="stylesheet" href="/css/bootstrap-side-modals.css">
-  <link rel="stylesheet" href="/css/common.css">
-  
-  <link rel="stylesheet" href="/plugins/toastr/toastr.min.css">
-  <link rel="stylesheet" href="/plugins/select2/css/select2.min.css">
-  <link rel="stylesheet" href="/plugins/select2-bootstrap4-theme/select2-bootstrap4.min.css">
-  <link rel="stylesheet" href="/plugins/tooltipster/dist/css/tooltipster.bundle.min.css">
-  <link rel="stylesheet" href="/plugins/jquery-confirm/jquery-confirm.min.css">
-  
-  <link href="/plugins/Summernote/summernote.css" rel="stylesheet" type="text/css" />
-  <link href="/plugins/Summernote/summernote-bs4.min.css" rel="stylesheet" type="text/css" />
-  <link rel="stylesheet" href="/plugins/daterangepicker/daterangepicker.css">
-  <link href="/plugins/bootstrap-switch/css/bootstrap3/bootstrap-switch.css" rel="stylesheet" type="text/css" />
+        /* Styling for the stepper progress bar */
+        .stepper-item {
+            @apply relative flex flex-col justify-center items-center w-full;
+        }
+        .stepper-item:not(:last-child)::after {
+            content: '';
+            @apply absolute w-full h-0.5 bg-gray-200;
+            top: 25%;
+            left: 50%;
+            transform: translateY(-50%);
+        }
+        .stepper-item .step-counter {
+            @apply z-10 w-10 h-10 flex items-center justify-center rounded-full bg-gray-200 text-gray-500 font-semibold;
+            transition: all 0.3s ease;
+        }
+        .stepper-item.active .step-counter {
+            @apply bg-blue-600 text-white;
+        }
+        .stepper-item.completed .step-counter {
+            @apply bg-green-500 text-white;
+        }
+        .stepper-item.completed:after {
+             @apply bg-green-500;
+        }
+        .step-name {
+            @apply text-xs sm:text-sm text-center mt-2 text-gray-500;
+        }
+        .stepper-item.active .step-name {
+            @apply text-blue-600 font-semibold;
+        }
 
-  <style>
-      html,body {font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif}
+        /* Form input styling */
+        .form-input, .form-select, .form-textarea {
+            @apply w-full px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm;
+        }
 
-     .jconfirm-title{
-        color:navy;
-        font-weight:500;
-        font-size:36px;
-        text-align:center;
-        margin-left:320px;
-     }
-     .jconfirm-box{
-        background-color: whitesmoke!important;
-     }
+        /* Custom toggle switch styling */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider {
+            background-color: #2563eb; /* blue-600 */
+        }
+        input:checked + .slider:before {
+            transform: translateX(22px);
+        }
 
-     .sidebar-search-results > .list-group >.list-group-item{
-         background-color:darkgray!important;
-     }
-
-   
-  </style>
-
+        /* File upload area styling */
+        .drop-zone {
+            @apply flex justify-center items-center w-full px-6 py-10 border-2 border-gray-300 border-dashed rounded-md cursor-pointer hover:bg-gray-50;
+        }
+        .drop-zone-text {
+            @apply text-center text-gray-500;
+        }
+    </style>
 </head>
-<body class="hold-transition sidebar-mini">
-    <div b-41zv2k54n4 class="wrapper">
-        
+<body class="antialiased text-gray-800">
 
-        <nav b-41zv2k54n4 class="main-header navbar navbar-expand navbar-white navbar-light">
-            <ul b-41zv2k54n4 class="navbar-nav">
-                <li b-41zv2k54n4 class="nav-item d-none d-sm-inline-block">
-                    <div b-41zv2k54n4>
-                        <input b-41zv2k54n4 type="hidden" id="ModuleId" value="1"/>
-                        <input b-41zv2k54n4 type="hidden" id="ModuleName" value="MES"/>
-                        <input b-41zv2k54n4 type="hidden" id="DefaultDashboardURL" value="DMS/Home/Dashboard"/>
-                        <input b-41zv2k54n4 type="hidden" id="DefaultIndexURL" value="DMS/Home/Index"/>
-                        <h4 b-41zv2k54n4 id="AppMenuName" style="padding-left:0.3em;padding-top:0.2em">Dashboard</h4>
-                    </div>
-                </li>
-            </ul>
-
-            <!-- Right navbar links -->
-            <ul b-41zv2k54n4 class="navbar-nav ml-auto">
-                    <li b-41zv2k54n4 class="nav-item">
-                        <a b-41zv2k54n4 class="nav-link" href="#/Core/User/SSORedirect" id="qlmNav" role="button" data-toggle="tooltip" data-original-title="QLM">
-                            <img b-41zv2k54n4 src="/imgs/logo_qlm.png" />
-                        </a>
-                    </li>
-                <li b-41zv2k54n4 class="nav-item">
-                    <a b-41zv2k54n4 class="nav-link" href="javascript:void(0)" id="dmsGlobalSearch" role="button" data-toggle="tooltip" data-original-title="Search">
-                        <i b-41zv2k54n4 class="fas fa-search"></i>
-                    </a>
-                </li>
-                <li b-41zv2k54n4 class="nav-item">
-                    <a b-41zv2k54n4 class="nav-link" data-widget="fullscreen" href="javascript:void(0)" role="button" data-toggle="tooltip" data-original-title="Full Screen">
-                        <i b-41zv2k54n4 class="fas fa-expand-arrows-alt"></i>
-                    </a>
-                </li>
-                <li b-41zv2k54n4 class="nav-item">
-                    <a b-41zv2k54n4 class="nav-link" data-widget="pushmenu" href="javascript:void(0)" role="button"><i b-41zv2k54n4 class="fas fa-bars" data-toggle="tooltip" data-original-title="Menu"></i></a>
-                </li>
-            </ul>
-
-            <!-- UserInfo Right -->
-            <div b-41zv2k54n4 class="navbar-custom-menu">
-                <ul b-41zv2k54n4 class="nav navbar-nav">
-                    <li b-41zv2k54n4 class="dropdown user user-menu">
-                        <a b-41zv2k54n4 href="#" class="dropdown-toggle" data-toggle="dropdown">
-<div class='container' style='position: relative; color: white; text-align: center; display: inline;'><span class='rounded-corner' style='margin-right: 0;background-color: #CC33FF; width: 34px; height: 34px; display: inline; border-radius: 50%; padding: 8px 19px;'></span><div class='centered' style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 600 !important;'>AU</div></div>                        </a>
-                        <ul b-41zv2k54n4 class="dropdown-menu" style="margin-left:-160px;border-radius:15px;box-shadow:none !important;width:14rem; margin-top: 10px;">
-                            <!-- User image -->
-                            <li b-41zv2k54n4>
-                                <div b-41zv2k54n4 class="dropdown-item-text pt-2">
-                                    <div b-41zv2k54n4 class="d-flex align-items-center">
-                                        <div b-41zv2k54n4 class="avatar avatar-sm avatar-circle user-header">
-<div class='container' style='position: relative; color: white; text-align: center; display: inline;'><span class='rounded-corner' style='margin-right: 0;background-color: #3366CC; width: 34px; height: 34px; display: inline; border-radius: 50%; padding: 8px 19px;'></span><div class='centered' style='position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: 600 !important;'>AU</div></div>                                        </div>
-                                        <div b-41zv2k54n4 class="flex-grow-1 ml-3">
-                                            <div b-41zv2k54n4 class="mb-0">Admin User</div>
-                                            <p b-41zv2k54n4 class="card-text text-body">Administrator</p>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div b-41zv2k54n4 class="dropdown-divider"></div>
-                                <div b-41zv2k54n4 class="m-2 mb-1 profile-style">
-                                    <a b-41zv2k54n4 class="dropdown-item common-opr-btn" data-urlpath="/#/Core/User/ShowUserProfile" data-modalwidth="500px" data-actionname="User Profile" data-actiontitle="User Profile">Profile</a>
-                                </div>
-                                    <div b-41zv2k54n4 class="m-2 mb-1 profile-style">
-                                      <a b-41zv2k54n4 class="dropdown-item common-opr-btn" data-urlpath="Core/User/ChangePassword"  data-showinmodalpopup="True" data-modalwidth="500px" data-actionname="User Profile" data-actiontitle="Change Password">Change Password</a>                                  
-                                    </div>
-                                <div b-41zv2k54n4 class="dropdown-divider"></div>
-                                <div b-41zv2k54n4 class="m-2 profile-style">
-                                    <a class="dropdown-item" href="/Core/User/Logout">Sign out</a>
-                                </div>
-                            </li>
-                        </ul>
-                    </li>
-
-                </ul>
+    <div class="min-h-screen container mx-auto p-4 sm:p-6 lg:p-8">
+        <div class="max-w-5xl mx-auto bg-white rounded-2xl shadow-lg">
+            <!-- Header -->
+            <div class="px-6 py-5 border-b border-gray-200">
+                <h1 class="text-2xl font-bold text-gray-800">Change Management Request</h1>
+                <p class="text-sm text-gray-500 mt-1">Fill out the form below to submit a new change request.</p>
             </div>
 
-        </nav>
-        <!-- /.navbar -->
-        <!-- Main Sidebar Container -->
-        <aside b-41zv2k54n4 class="main-sidebar sidebar-light-primary elevation-4">
-            <!-- Brand Logo -->
-            <a b-41zv2k54n4 href="#/DMS/Home/Dashboard" class="brand-link" style="text-align:center;height:56px;padding-top:10px">
-                <img b-41zv2k54n4 src="/imgs/logo_qlm_sm.png" />
-            </a>
+            <!-- Stepper -->
+            <div id="stepper" class="px-6 py-5 flex justify-between border-b border-gray-200">
+                <!-- Stepper items will be generated by JS -->
+            </div>
 
-    <!-- Sidebar -->
-    <div b-41zv2k54n4 class="sidebar">
+            <!-- Form -->
+            <form id="changeManagementForm" class="px-6 py-8">
+                <!-- Each fieldset is a step in the form -->
+                <fieldset class="form-step" data-step="1">
+                    <h2 class="text-xl font-semibold mb-6 text-gray-700">1. Basic Details</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- Request Type -->
+                        <div>
+                            <label for="requestType" class="block text-sm font-medium text-gray-700">Request Type</label>
+                            <select id="requestType" name="requestType" class="form-select mt-1">
+                                <option>New Change</option>
+                                <option>Modification</option>
+                                <option>Deviation</option>
+                            </select>
+                        </div>
+                        <!-- CR Number -->
+                        <div>
+                            <label for="crNumber" class="block text-sm font-medium text-gray-700">CR Number</label>
+                            <input type="text" id="crNumber" name="crNumber" class="form-input mt-1" placeholder="e.g., CR-2025-001">
+                        </div>
+                        <!-- CR Name -->
+                        <div>
+                            <label for="crName" class="block text-sm font-medium text-gray-700">CR Name</label>
+                            <input type="text" id="crName" name="crName" class="form-input mt-1" placeholder="Enter CR Name">
+                        </div>
+                        <!-- E Number -->
+                        <div>
+                            <label for="eNumber" class="block text-sm font-medium text-gray-700">E Number</label>
+                            <input type="text" id="eNumber" name="eNumber" class="form-input mt-1" placeholder="Enter E Number">
+                        </div>
+                        <!-- Supplier Change number -->
+                        <div>
+                            <label for="supplierChangeNumber" class="block text-sm font-medium text-gray-700">Supplier Change Number</label>
+                            <input type="text" id="supplierChangeNumber" name="supplierChangeNumber" class="form-input mt-1" placeholder="Enter Supplier Change Number">
+                        </div>
+                        <!-- Program -->
+                        <div>
+                            <label for="program" class="block text-sm font-medium text-gray-700">Program</label>
+                            <select id="program" name="program" class="form-select mt-1">
+                                <option>Project Alpha</option>
+                                <option>Project Beta</option>
+                                <option>Project Gamma</option>
+                            </select>
+                        </div>
+                        <!-- Secondary Program -->
+                        <div>
+                            <label for="secondaryProgram" class="block text-sm font-medium text-gray-700">Secondary Program</label>
+                             <select id="secondaryProgram" name="secondaryProgram" class="form-select mt-1">
+                                <option>None</option>
+                                <option>Project Delta</option>
+                            </select>
+                        </div>
+                        <!-- Customer -->
+                        <div>
+                            <label for="customer" class="block text-sm font-medium text-gray-700">Customer</label>
+                            <input type="text" id="customer" name="customer" class="form-input mt-1" placeholder="Customer Name">
+                        </div>
+                        <!-- Buyer -->
+                        <div>
+                            <label for="buyer" class="block text-sm font-medium text-gray-700">Buyer</label>
+                            <input type="text" id="buyer" name="buyer" class="form-input mt-1" placeholder="Buyer Name">
+                        </div>
+                        <!-- Plant -->
+                        <div>
+                            <label for="plant" class="block text-sm font-medium text-gray-700">Plant</label>
+                            <select id="plant" name="plant" class="form-select mt-1">
+                                <option>Plant A</option>
+                                <option>Plant B</option>
+                            </select>
+                        </div>
+                        <!-- Business Unit -->
+                        <div>
+                            <label for="businessUnit" class="block text-sm font-medium text-gray-700">Business Unit</label>
+                             <select id="businessUnit" name="businessUnit" class="form-select mt-1">
+                                <option>BU 1</option>
+                                <option>BU 2</option>
+                            </select>
+                        </div>
+                         <!-- Location -->
+                        <div>
+                            <label for="location" class="block text-sm font-medium text-gray-700">Location</label>
+                            <input type="text" id="location" name="location" class="form-input mt-1" placeholder="e.g., City, Country">
+                        </div>
+                        <!-- Dates -->
+                        <div class="md:col-span-1">
+                            <label for="creationDate" class="block text-sm font-medium text-gray-700">Creation Date</label>
+                            <input type="date" id="creationDate" name="creationDate" class="form-input mt-1">
+                        </div>
+                        <div class="md:col-span-1">
+                            <label for="targetDate" class="block text-sm font-medium text-gray-700">Target Implementation Date</label>
+                            <input type="date" id="targetDate" name="targetDate" class="form-input mt-1">
+                        </div>
+                        <!-- Change Validity -->
+                        <div class="md:col-span-1 p-3 bg-gray-50 rounded-lg">
+                             <p class="block text-sm font-medium text-gray-700 mb-1">Change Validity</p>
+                             <div class="flex items-center justify-between text-sm">
+                                 <span class="text-gray-500">From: <strong class="text-gray-800">2024-01-01</strong></span>
+                                 <span class="text-gray-500">To: <strong class="text-gray-800">2025-01-01</strong></span>
+                             </div>
+                        </div>
+                        <!-- Initiator and Coordinators -->
+                         <div>
+                            <label for="initiator" class="block text-sm font-medium text-gray-700">Initiator</label>
+                            <input type="text" id="initiator" name="initiator" class="form-input mt-1" placeholder="Initiator Name">
+                        </div>
+                        <div>
+                            <label for="coordinator" class="block text-sm font-medium text-gray-700">Coordinator</label>
+                            <input type="text" id="coordinator" name="coordinator" class="form-input mt-1" placeholder="Coordinator Name">
+                        </div>
+                        <div>
+                            <label for="secondaryCoordinator" class="block text-sm font-medium text-gray-700">Secondary Coordinator</label>
+                            <input type="text" id="secondaryCoordinator" name="secondaryCoordinator" class="form-input mt-1" placeholder="Optional">
+                        </div>
+                         <!-- Change Reason, Type, Category -->
+                         <div class="lg:col-span-1">
+                            <label for="changeReason" class="block text-sm font-medium text-gray-700">Change Reason</label>
+                            <select id="changeReason" name="changeReason" class="form-select mt-1">
+                                <option>Cost Reduction</option>
+                                <option>Quality Improvement</option>
+                                <option>New Feature</option>
+                            </select>
+                        </div>
+                        <div class="lg:col-span-1">
+                            <label for="changeCategory" class="block text-sm font-medium text-gray-700">Change Category</label>
+                            <select id="changeCategory" name="changeCategory" class="form-select mt-1">
+                                <option>Process Change</option>
+                                <option>Material Change</option>
+                                <option>Design Change</option>
+                            </select>
+                        </div>
+                        <div class="lg:col-span-1">
+                            <label for="changeType" class="block text-sm font-medium text-gray-700">Change Type</label>
+                            <select id="changeType" name="changeType" class="form-select mt-1">
+                                <option>Permanent</option>
+                                <option>Temporary</option>
+                            </select>
+                        </div>
 
-      <!-- Sidebar Menu -->
-      <nav b-41zv2k54n4 class="mt-2">
-        <ul b-41zv2k54n4 class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-step hidden" data-step="2">
+                    <h2 class="text-xl font-semibold mb-6 text-gray-700">2. Part & Supplier Details</h2>
+                     <!-- Part Details -->
+                    <div class="p-5 border border-gray-200 rounded-lg mb-6">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-600">Part Details</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            <input type="text" class="form-input" placeholder="Part Number">
+                            <input type="text" class="form-input" placeholder="Part Name">
+                            <input type="text" class="form-input" placeholder="Part Revision">
+                            <select class="form-select">
+                                <option>Select Part Classification</option>
+                                <option>Class A</option>
+                                <option>Class B</option>
+                            </select>
+                            <input type="text" class="form-input" placeholder="Supplier Part Number">
+                            <input type="text" class="form-input" placeholder="Customer Part Number">
+                            <select class="form-select">
+                                <option>Select Material Status</option>
+                                <option>Active</option>
+                                <option>Obsolete</option>
+                            </select>
+                             <input type="number" class="form-input" placeholder="Stock Quantity">
+                        </div>
+                    </div>
+                     <!-- Supplier Details -->
+                    <div class="p-5 border border-gray-200 rounded-lg">
+                        <h3 class="text-lg font-semibold mb-4 text-gray-600">Supplier Details</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <input type="text" class="form-input" placeholder="Supplier Name">
+                            <input type="text" class="form-input" placeholder="Supplier Coordinator">
+                            <input type="text" class="form-input" placeholder="Supplier Location">
+                            <input type="text" class="form-input" placeholder="Supplier Plant">
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-step hidden" data-step="3">
+                    <h2 class="text-xl font-semibold mb-6 text-gray-700">3. Document Details</h2>
+                    <div class="grid grid-cols-1 gap-8">
+                        <div>
+                            <label for="proposedChange" class="block text-sm font-medium text-gray-700">Proposed Change</label>
+                            <textarea id="proposedChange" name="proposedChange" rows="4" class="form-textarea mt-1" placeholder="Describe the proposed change in detail..."></textarea>
+                        </div>
+                        <div>
+                            <label for="comments" class="block text-sm font-medium text-gray-700">Comments</label>
+                            <textarea id="comments" name="comments" rows="3" class="form-textarea mt-1" placeholder="Any additional comments..."></textarea>
+                        </div>
+                        <div>
+                            <label for="links" class="block text-sm font-medium text-gray-700">Related Links</label>
+                            <textarea id="links" name="links" rows="2" class="form-textarea mt-1" placeholder="Add relevant URLs, one per line"></textarea>
+                        </div>
+                         <!-- File Uploads -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Before Change Images/Graphs</label>
+                                <div class="drop-zone">
+                                    <div class="drop-zone-text">
+                                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                                        <p class="mt-1">Drag & drop files or <span class="font-medium text-blue-600">click to upload</span></p>
+                                    </div>
+                                    <input type="file" class="hidden" multiple>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">After Change Images/Graphs</label>
+                                <div class="drop-zone">
+                                     <div class="drop-zone-text">
+                                        <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true"><path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                                        <p class="mt-1">Drag & drop files or <span class="font-medium text-blue-600">click to upload</span></p>
+                                    </div>
+                                    <input type="file" class="hidden" multiple>
+                                </div>
+                            </div>
+                        </div>
+                         <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Supporting Documents</label>
+                             <div class="drop-zone py-6">
+                                <div class="drop-zone-text">
+                                    <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" /></svg>
+                                    <p class="mt-1">Upload PDF, DOCX, XLSX files</p>
+                                </div>
+                                <input type="file" class="hidden" multiple>
+                             </div>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <fieldset class="form-step hidden" data-step="4">
+                    <h2 class="text-xl font-semibold mb-6 text-gray-700">4. Additional Details</h2>
+                    <div class="space-y-6">
+                        <div class="flex items-center justify-between p-4 border rounded-lg">
+                            <div>
+                                <h4 class="font-medium text-gray-800">Tooling Change Required</h4>
+                                <p class="text-sm text-gray-500">Is new or modified tooling needed for this change?</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                         <div class="flex items-center justify-between p-4 border rounded-lg">
+                            <div>
+                                <h4 class="font-medium text-gray-800">Customer Approval Required</h4>
+                                <p class="text-sm text-gray-500">Does this change need explicit approval from the customer?</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                         <div class="flex items-center justify-between p-4 border rounded-lg">
+                            <div>
+                                <h4 class="font-medium text-gray-800">Affects Fit, Form, or Function</h4>
+                                 <p class="text-sm text-gray-500">Does the change impact the part's physical or functional characteristics?</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox">
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                         <div class="flex items-center justify-between p-4 border rounded-lg">
+                            <div>
+                                <h4 class="font-medium text-gray-800">Requires Production Trial Run</h4>
+                                <p class="text-sm text-gray-500">Is a trial run required before full implementation?</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </fieldset>
+                
+                <fieldset class="form-step hidden" data-step="5">
+                    <h2 class="text-xl font-semibold mb-6 text-gray-700">5. Approval & Submission</h2>
+                     <div class="grid grid-cols-1 gap-6">
+                        <div>
+                            <label for="approvalTemplate" class="block text-sm font-medium text-gray-700">Approval Template</label>
+                            <select id="approvalTemplate" name="approvalTemplate" class="form-select mt-1">
+                                <option>Standard Approval Flow</option>
+                                <option>Expedited Approval Flow</option>
+                                <option>Engineering Only Approval</option>
+                            </select>
+                        </div>
+                        <div class="bg-blue-50 border border-blue-200 text-blue-800 text-sm p-4 rounded-lg">
+                           <p>You are about to submit this Change Request. Please review all details in the previous steps before submission. Once submitted, the request will be routed to the selected approval template.</p>
+                        </div>
+                     </div>
+                </fieldset>
+
+                <!-- Navigation Buttons -->
+                <div class="mt-8 pt-5 border-t border-gray-200 flex justify-between items-center">
+                    <button type="button" id="prevBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-md shadow-sm transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                        Previous
+                    </button>
+                    <button type="button" id="nextBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors duration-200">
+                        Next
+                    </button>
+                     <button type="submit" id="submitBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md shadow-sm transition-colors duration-200 hidden">
+                        Submit Request
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configuration for form steps
+            const STEPS = [
+                { id: 1, name: 'Basic Details' },
+                { id: 2, name: 'Part & Supplier' },
+                { id: 3, name: 'Documents' },
+                { id: 4, name: 'Additional Details' },
+                { id: 5, name: 'Approval' }
+            ];
             
+            let currentStep = 1;
 
-<li class='nav-item'><a href='#/DMS/Home/Dashboard' class='nav-link'><i class='nav-icon fas fa-chart-bar'></i> <p>Dashboard</p></a></li><li class='nav-item'><a href='#/Core/Listing/Page/5' class='nav-link'><i class='nav-icon fas fa-box'></i> <p>Workspaces</p></a></li><li class='nav-item'><a href='javascript:void(0)' class='nav-link' ><i class='nav-icon fas fa-chart-line'></i><p>Reports<i class='right fas fa-angle-left'></i></p></a><ul class='nav nav-treeview' style='display: none;'><li class='nav-item'><a href='#/Core/CustomDashboard/ViewDashboard/e43e224d-3d2e-4119-b068-07f99fd4f24d' class='nav-link'><i class='far fa-circle nav-icon'></i><p>Files Dashboard</p></a></li><li class='nav-item'><a href='#/Core/CustomDashboard/ViewDashboard/0108522a-2954-4766-8f89-9ec5c7adc568' class='nav-link'><i class='far fa-circle nav-icon'></i><p>General Report</p></a></li></ul></li><li class='nav-item'><a href='javascript:void(0)' class='nav-link' ><i class='nav-icon fas fa-user-cog'></i><p>User Management<i class='right fas fa-angle-left'></i></p></a><ul class='nav nav-treeview' style='display: none;'><li class='nav-item'><a href='#/Core/Listing/Page/1' class='nav-link'><i class='far fa-circle nav-icon'></i><p>Users</p></a></li><li class='nav-item'><a href='#/Core/Listing/Page/2' class='nav-link'><i class='far fa-circle nav-icon'></i><p>Roles</p></a></li><li class='nav-item'><a href='#/Core/Position/Manage/7' class='nav-link'><i class='far fa-circle nav-icon'></i><p>Positions</p></a></li><li class='nav-item'><a href='#/Core/Listing/Page/13' class='nav-link'><i class='far fa-circle nav-icon'></i><p>User Groups</p></a></li><li class='nav-item'><a href='#/Core/Listing/Page/102' class='nav-link'><i class='far fa-circle nav-icon'></i><p>Notification Groups</p></a></li><li class='nav-item'><a href='#/Core/LMS/Details' class='nav-link'><i class='far fa-circle nav-icon'></i><p>LMS Details</p></a></li></ul></li><li class='nav-item'><a href='javascript:void(0)' class='nav-link' ><i class='nav-icon fas fa-cogs'></i><p>Configuration<i class='right fas fa-angle-left'></i></p></a><ul class='nav nav-treeview' style='display: none;'><li class='nav-item'><a href='#/Core/Listing/Page/52' class='nav-link'><i class='far fa-circle nav-icon'></i><p>Business Unit</p></a></li><li class='nav-item'><a href='#/Core/Listing/Page/115' class='nav-link'><i class='far fa-circle nav-icon'></i><p>File Acknowledgement</p></a></li><li class='nav-item'><a href='#/Core/Listing/Page/6' class='nav-link'><i class='far fa-circle nav-icon'></i><p>Folder Structure</p></a></li><li class='nav-item'><a href='#/Core/Listing/Page/4' class='nav-link'><i class='far fa-circle nav-icon'></i><p>Workflows</p></a></li><li class='nav-item'><a href='#/Core/Listing/Page/23' class='nav-link'><i class='far fa-circle nav-icon'></i><p>List Of Values</p></a></li><li class='nav-item'><a href='#/Core/Listing/Page/21' class='nav-link'><i class='far fa-circle nav-icon'></i><p>Tags</p></a></li><li class='nav-item'><a href='#/Core/Listing/Page/106' class='nav-link'><i class='far fa-circle nav-icon'></i><p>Divisions</p></a></li><li class='nav-item'><a href='#/Core/Listing/Page/34' class='nav-link'><i class='far fa-circle nav-icon'></i><p>Plants</p></a></li><li class='nav-item'><a href='#/Core/Listing/Page/107' class='nav-link'><i class='far fa-circle nav-icon'></i><p>Departments</p></a></li><li class='nav-item'><a href='#/Core/Listing/Page/108' class='nav-link'><i class='far fa-circle nav-icon'></i><p>Document Types</p></a></li><li class='nav-item'><a href='#/Core/UserGuides/UserGuidesTreeView/110' class='nav-link'><i class='far fa-circle nav-icon'></i><p>UserGuides</p></a></li><li class='nav-item'><a href='#/Core/Listing/Page/117' class='nav-link'><i class='far fa-circle nav-icon'></i><p>Function</p></a></li><li class='nav-item'><a href='#/Core/Listing/Page/118' class='nav-link'><i class='far fa-circle nav-icon'></i><p>Country</p></a></li><script>
-    
-</script>
-        </ul>
-      </nav>
-      <!-- /.sidebar-menu -->
-    </div>
-    <!-- /.sidebar -->
-  </aside>
+            const stepperContainer = document.getElementById('stepper');
+            const formSteps = document.querySelectorAll('.form-step');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
 
-  <!-- Content Wrapper. Contains page content -->
-  <div b-41zv2k54n4 class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <div b-41zv2k54n4 class="content-header" style="display:none;">
-      <div b-41zv2k54n4 class="container-fluid">
-        <div b-41zv2k54n4 class="row mb-2">
+            // Function to generate stepper UI
+            const createStepper = () => {
+                let stepperHTML = '';
+                STEPS.forEach(step => {
+                    stepperHTML += `
+                        <div class="stepper-item" data-step-id="${step.id}">
+                            <div class="step-counter">${step.id}</div>
+                            <div class="step-name">${step.name}</div>
+                        </div>
+                    `;
+                });
+                stepperContainer.innerHTML = stepperHTML;
+            };
 
-        </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
-    </div>
-    <!-- /.content-header -->
+            // Function to update the UI based on the current step
+            const updateUI = () => {
+                // Update form steps visibility
+                formSteps.forEach(step => {
+                    step.classList.toggle('hidden', parseInt(step.dataset.step) !== currentStep);
+                });
 
-    <!-- Main content -->
-    <div b-41zv2k54n4 class="content" style="padding-top:0.8em">
-      <div b-41zv2k54n4 class="container-fluid">
-         <div b-41zv2k54n4 id="MainContent">
-             <table class='table table-hover text-nowrap'><thead><tr><td style='height:100px'><div class='overlay-spinner' style='height:80px'></div></td></tr></thead></table>
+                // Update stepper items
+                const stepperItems = stepperContainer.querySelectorAll('.stepper-item');
+                stepperItems.forEach(item => {
+                    const stepId = parseInt(item.dataset.stepId);
+                    item.classList.remove('active', 'completed');
+                    if (stepId === currentStep) {
+                        item.classList.add('active');
+                    } else if (stepId < currentStep) {
+                        item.classList.add('completed');
+                    }
+                });
 
-         </div>
+                // Update button states
+                prevBtn.disabled = currentStep === 1;
+                nextBtn.classList.toggle('hidden', currentStep === STEPS.length);
+                submitBtn.classList.toggle('hidden', currentStep !== STEPS.length);
+            };
 
-         <div class='modal modal-right fade in' id='CommonOprModal' role='dialog' tabindex='-1'><div class='modal-dialog'><div class='modal-content' style='width:100%;'><div class='modal-header'><h5 class='modal-title pull-left' id='CommonOprModalTitle'>Model</h5><button type = 'button' class='close' data-dismiss='modal' aria-label='Close' style='opacity:1;'><span class='white-text' aria-hidden='true'>&times;</span></button></div><div id = 'CommonOprModalBody' class='modal-body no-margin'></div></div></div></div>
-         
-        <!-- /.row -->
-      </div><!-- /.container-fluid -->
-    </div>
-    <!-- /.content -->
-  </div>
-  <!-- /.content-wrapper -->
+            // Event Listeners for buttons
+            nextBtn.addEventListener('click', () => {
+                if (currentStep < STEPS.length) {
+                    currentStep++;
+                    updateUI();
+                }
+            });
 
-  <!-- Control Sidebar -->
-  <aside b-41zv2k54n4 class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-    <div b-41zv2k54n4 class="p-3">
-      <h5 b-41zv2k54n4>Title</h5>
-      <p b-41zv2k54n4>Sidebar content</p>
-    </div>
-  </aside>
-  <!-- /.control-sidebar -->
+            prevBtn.addEventListener('click', () => {
+                if (currentStep > 1) {
+                    currentStep--;
+                    updateUI();
+                }
+            });
+            
+            // Handle form submission
+            document.getElementById('changeManagementForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                // In a real application, you would collect form data and send it to a server.
+                alert('Change Request Submitted Successfully!');
+                // Optionally, reset the form or redirect.
+                // For this prototype, we'll just go back to the first step.
+                currentStep = 1;
+                updateUI();
+            });
 
-</div>
-<!-- ./wrapper -->
+            // Make drop zones interactive
+            document.querySelectorAll('.drop-zone').forEach(dropZone => {
+                const input = dropZone.querySelector('input[type="file"]');
+                const textElement = dropZone.querySelector('.drop-zone-text p');
+                const defaultText = textElement.innerHTML;
 
-<!-- REQUIRED SCRIPTS -->
-    <script src="/js/jquery-3.6.0.min.js"></script>
-    <script src="plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
-    <script src="dist/js/adminlte.min.js"></script>
-    <script src="/js/core-route.js"></script>
-    <script src="/js/jquery.twbsPagination.min.js"></script>
-    <script src="/plugins/select2/js/select2.full.min.js"></script>
-    <script src="/plugins/toastr/toastr.min.js"></script>
-    <script src="/plugins/tooltipster/dist/js/tooltipster.bundle.min.js"></script>
-    <script src="/plugins/jquery-confirm/jquery-confirm.min.js"></script>
-    <script src="/js/layout-routing.js"></script>
-    <script src="/js/common.js"></script>
-    <script src="/plugins/Summernote/summernote-bs4.min.js"></script>
-    <link rel="stylesheet" href="/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
-    <script src="/plugins/moment/moment.min.js"></script>
-    <script src="/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-    <script src="/plugins/editorjs-next/assets/json-preview.js"></script>
-    <script src="/plugins/bootstrap-switch/js/bootstrap-switch.js"></script>
-    <script src="/plugins/tinymce/tinymce.min.js" referrerpolicy="origin"></script>
-    <script src="https://unpkg.com/superset-embedded-sdk"></script>
+                dropZone.addEventListener('click', () => input.click());
 
-    
+                dropZone.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.add('bg-gray-100');
+                });
+                
+                dropZone.addEventListener('dragleave', () => {
+                     dropZone.classList.remove('bg-gray-100');
+                });
 
+                dropZone.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    dropZone.classList.remove('bg-gray-100');
+                    if (e.dataTransfer.files.length) {
+                        input.files = e.dataTransfer.files;
+                        updateThumbnail(dropZone, input.files);
+                    }
+                });
+
+                input.addEventListener('change', () => {
+                     if (input.files.length) {
+                        updateThumbnail(dropZone, input.files);
+                    } else {
+                         textElement.innerHTML = defaultText;
+                    }
+                });
+                
+                function updateThumbnail(zone, files) {
+                    if (files.length > 1) {
+                        textElement.innerHTML = `<span class="font-medium">${files.length} files selected</span>`;
+                    } else if (files.length === 1) {
+                         textElement.textContent = files[0].name;
+                    }
+                }
+            });
+
+
+            // Initial setup
+            createStepper();
+            updateUI();
+        });
+    </script>
 </body>
 </html>
-
